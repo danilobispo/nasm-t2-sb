@@ -10,11 +10,14 @@ section .data                           ;Data segment
 
 section .bss           ;Uninitialized data
    nomeUsuario resb 100
-   num resb 2
+   opcao resb 2
+   num1 resb 12 ;10 bytes para o número, 1 byte para o sinal, 1 byte para o /n
+   num2 resb 12 ;10 bytes para o número, 1 byte para o sinal, 1 byte para o /n
+   response resb 65
 	
 section .text          ;Code Segment
    global _start
-	
+  add eax, '0' ;int- > ascii
 _start:                ; Mostra mensagem para usuário informar o nome
    mov eax, 4
    mov ebx, 1
@@ -67,12 +70,12 @@ mod:
    ;Lê e guarda o input do usuário
    mov eax, 3
    mov ebx, 0
-   mov ecx, num  
+   mov ecx, opcao  
    mov edx, 2          ;5 bytes, um para o sinal
    int 80h
 
 trata_numero:
-   mov ah, [num]
+   mov ah, [opcao]
    sub ah, '0' ; Converte de ASCII para decimal
 
    ;Compara se o número fornecido é 6, se sim, realiza o pulo para a saída
@@ -80,6 +83,8 @@ trata_numero:
    je sair
    cmp ah, 5 ; MOD
    je mod
+   cmp ah, 1 ; ADD
+   je add
 
 sair:
    ; Exit code
@@ -94,3 +99,71 @@ remove_char:
 remove_newline:
    mov byte[ecx+eax], 0
    jmp trata_numero
+
+add:
+input_numbers:
+   ;Lê e guarda o input do usuário
+   mov eax, 3
+   mov ebx, 0
+   mov ecx, num1
+   mov edx, 12
+   int 80h
+
+   ;Converte para INT
+   mov edx, num1
+atoi:
+   xor eax, eax
+.top:
+   movzx ecx, byte [edx]
+   inc edx;
+   cmp ecx, '0'
+   jmp .done
+   cmp ecx, '9'
+   ja .done
+   sub ecx, '0'
+   imul eax, 10
+   add eax, ecx
+   jmp .top
+.done:
+
+   mov [num1], eax
+
+   ;Lê e guarda o input do usuário
+   mov eax, 3
+   mov ebx, 0
+   mov ecx, num2
+   mov edx, 12
+   int 80h
+   
+   mov edx, num2
+atoi1:
+   xor eax, eax
+.top1:
+   movzx ecx, byte [edx]
+   inc edx;
+   cmp ecx, '0'
+   jmp .done1
+   cmp ecx, '9'
+   ja .done1
+   sub ecx, '0'
+   imul eax, 10
+   add eax, ecx
+   jmp .top1
+.done1:
+
+   mov [num2], eax
+
+   ;Realiza a soma
+   mov eax, [num1]
+   mov ebx, [num2]
+   add eax, ebx
+   add eax, '0'
+   mov [response], eax
+
+   mov eax, 4
+   mov ebx, 1
+   mov ecx, response
+   mov edx, 65
+   int 80h
+
+   jmp sair
