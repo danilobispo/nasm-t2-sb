@@ -26,7 +26,7 @@ section .bss           ;Uninitialized data
 	num1_int resd 1
 	num2_int resd 1
 	num1_int_tamanho resd 1 ; Os dois tamanhos são iguais, então vamos reaproveitar pra segunda
-	new_int resb 30
+	response_saida resb 30
 	response_size resd 2
 
 section .text          ;Code Segment
@@ -277,7 +277,7 @@ prepara_resultado_final:
 	;jne converte_int_para_string; Se ebx não for igual a 1, salto para
 	;neg eax
 converte_int_para_string:
-  mov esi, new_int; Agora colocamos esi para apontar para o endereço do nosso novo inteiro 
+  mov esi, response_saida; Agora colocamos esi para apontar para o endereço do nosso novo inteiro 
   mov ebx, 10 ; ebx novamente recebe 10, pois iremos fazer a desconversão
   xor ecx, ecx ; Zeramos ecx
   cmp eax, 0 ; Comparamos eax com 0
@@ -308,18 +308,16 @@ lp2:
   cmp edx, 1
   jne positivo
   pop ecx;
-  mov esi, new_int
+  mov esi, response_saida
   mov [esi], byte '-'
-  jmp finish
-positivo: mov esi, new_int
+  jmp fim
+positivo: mov esi, response_saida
   mov [esi], byte '+'
-finish:
+fim:
 mov [response_size], eax
 
-;print out new int
-
 mov edx, dword [response_size]
-mov ecx, new_int
+mov ecx, response_saida
 mov ebx, 1
 mov eax, 4
 int 80h
