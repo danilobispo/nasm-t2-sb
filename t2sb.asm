@@ -32,18 +32,12 @@ section .bss           ;Uninitialized data
 section .text          ;Code Segment
 	global _start
 _start:                ; Mostra mensagem para usuário informar o nome
-	mov eax, 4
-	mov ebx, 1
 	mov ecx, informeNomeUsuario
 	mov edx, lenInformeNomeUsuario
-	int 80h
-
-   ;Lê e guarda o input do usuário
-	mov eax, 3
-	mov ebx, 0
+	call print_string	
 	mov ecx, nomeUsuario  
 	mov edx, 100          ;100 bytes é o tamanho máximo do nome(100 caracteres)
-	int 80h
+	call escrever_string
 
 trataNomeDeUsuario:
 	dec eax
@@ -52,40 +46,25 @@ trataNomeDeUsuario:
 	
 mostra_mensagem:
 	;Mostra a mensagem 'Hóla, '
-	mov eax, 4
-	mov ebx, 1
 	mov ecx, holaMsg
 	mov edx, lenHolaMsg
-	int 80h  
-
-	;Por fim, exibe o nome inserido pelo usuário
-	mov eax, 4
-	mov ebx, 1
+	call print_string
 	mov ecx, nomeUsuario
 	mov edx, 100
-	int 80h
-
-	;Mostra a mensagem de 'Bem vindo'
-	mov eax, 4
-	mov ebx, 1
+	call print_string ;Por fim, exibe o nome inserido pelo usuário
 	mov ecx, bemVindoMsg
 	mov edx, lenBemVindoMsg
-	int 80h  
+	call print_string
 
 calculadora_options:
 	;Mostra as opções da calculadora
-	mov eax, 4
-	mov ebx, 1
 	mov ecx, operacoesOptions
 	mov edx, lenOperacoesOptions
-	int 80h  
-
-	;Lê e guarda o input do usuário
-	mov eax, 3
-	mov ebx, 0
+	call print_string
+	
 	mov ecx, opcao  
-	mov edx, 2          ;5 bytes, um para o sinal
-	int 80h
+	mov edx, 2          
+	call escrever_string ;Lê e guarda o input do usuário
 	
 	mov ah, [opcao]
 	sub ah, '0' ; Converte de ASCII para decimal
@@ -155,22 +134,17 @@ remove_newline:
 	jmp trata_numero
 
 inputNumbers:
-
-	mov eax, 4
-	mov ebx, 1
 	mov ecx, informeNumero1
 	mov edx, lenInformeNumero1
-	int 80h
-	;Lê e guarda o input do usuário
-	mov eax, 3
-	mov ebx, 0
+	call print_string
 	mov ecx, num1_string
 	mov edx, 12
-	int 80h
+	call escrever_string ;Lê e guarda o input do usuário
+	
 
 	;Converte para INT
 
-	;now save size of string input
+	
 	dec eax; tira o '/n'
 	mov dword [num1_int_tamanho], eax  ; Guarda o tamanho da string
 
@@ -267,9 +241,6 @@ lop_num2_int:
 	fim_parse_num2:
 	mov dword [num2_int], eax
 	jmp trata_numero
-	
-	
-	jmp trata_numero
 
 prepara_resultado_final:
 	;pop ebx;
@@ -330,3 +301,14 @@ loop_menu:
 	mov edx, 1
 	int 80h
 jmp calculadora_options
+
+print_string:
+	mov eax, 4
+	mov ebx, 1
+	int 80h
+	ret
+escrever_string:
+	mov eax, 3
+	mov ebx, 0
+	int 80h
+	ret
