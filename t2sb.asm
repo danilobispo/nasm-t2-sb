@@ -243,10 +243,6 @@ lop_num2_int:
 	jmp trata_numero
 
 prepara_resultado_final:
-	;pop ebx;
-	;cmp ebx, 1; ebx agora é comparado com 1
-	;jne converte_int_para_string; Se ebx não for igual a 1, salto para
-	;neg eax
 converte_int_para_string:
   mov esi, response_saida; Agora colocamos esi para apontar para o endereço do nosso novo inteiro 
   mov ebx, 10 ; ebx novamente recebe 10, pois iremos fazer a desconversão
