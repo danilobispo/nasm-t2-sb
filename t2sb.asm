@@ -116,17 +116,21 @@ add:
 	jmp prepara_resultado_final
 	
 mod:
-	jmp sair
+	mov eax, dword[num1_int]
+	mov ebx, dword[num2_int]
+	idiv ebx
+	mov eax, edx
+	jmp prepara_resultado_final
 divisao:
 	mov eax, dword[num1_int]
 	mov ebx, dword[num2_int]
-	div ebx
-	jmp sair
+	idiv ebx
+	jmp prepara_resultado_final
 multiplicacao:
 	mov eax, dword[num1_int]
 	mov ebx, dword[num2_int]
-	mul ebx
-	jmp sair
+	imul ebx
+	jmp prepara_resultado_final
 subtracao:
 	mov eax, dword[num1_int]
 	mov ebx, dword[num2_int]
