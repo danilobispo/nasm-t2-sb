@@ -3,19 +3,18 @@ section .data                           ;Data segment
 	lenInformeNomeUsuario equ $-informeNomeUsuario
 	holaMsg db 'Hóla, '
 	lenHolaMsg equ $-holaMsg
-	bemVindoMsg db ',bem vindo ao programa de CALC IA-32', 10, 'ESCOLHA UMA OPÇÃO:', 10
+	bemVindoMsg db ',bem vindo ao programa de CALC IA-32', 10, 
 	lenBemVindoMsg equ $-bemVindoMsg
-	operacoesOptions db '-1: SOMA',10,'-2: SUBTRAÇÃO', 10, '-3: MULTIPLICAÇÃO', 10 ,'-4: DIVISÃO',10, '-5: MOD', 10, '-6: SAIR', 10
+	operacoesOptions db 'ESCOLHA UMA OPÇÃO:', 10, '-1: SOMA',10,'-2: SUBTRAÇÃO', 10, '-3: MULTIPLICAÇÃO', 10 ,'-4: DIVISÃO',10, '-5: MOD', 10, '-6: SAIR', 10
 	lenOperacoesOptions equ $-operacoesOptions           
 	informeNumero1 db 'Informe o primeiro número da operação: ', 10
 	lenInformeNumero1 equ $-informeNumero1
 	informeNumero2 db 'Informe o segundo número da operação: ', 10
 	lenInformeNumero2 equ $-informeNumero2
 	
-	num1 dd 40
-	num2 dd 50
 
 section .bss           ;Uninitialized data
+	continua_enter resb 1
 	nomeUsuario resb 100
 	opcao resb 2
 	;num1 resb 12 ;10 bytes para o número, 1 byte para o sinal, 1 byte para o /n
@@ -88,6 +87,11 @@ calculadora_options:
 	mov edx, 2          ;5 bytes, um para o sinal
 	int 80h
 	
+	mov ah, [opcao]
+	sub ah, '0' ; Converte de ASCII para decimal
+	cmp ah, 6 ; SAIR
+	je sair
+	
 	jmp inputNumbers
 
 trata_numero:
@@ -96,8 +100,6 @@ trata_numero:
 
 menu_option:
 	;Compara se o número fornecido é 6, se sim, realiza o pulo para a saída
-	cmp ah, 6 ; SAIR
-	je sair
 	cmp ah, 5 ; MOD
 	je mod
 	cmp ah, 4 ; DIV
@@ -322,4 +324,11 @@ mov ebx, 1
 mov eax, 4
 int 80h
 
-jmp sair
+loop_menu:
+;Lê e guarda o input do usuário
+	mov eax, 3
+	mov ebx, 0
+	mov ecx, continua_enter  
+	mov edx, 1
+	int 80h
+jmp calculadora_options
